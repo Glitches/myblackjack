@@ -65,9 +65,24 @@ class Game(object):
             elif self.deck[c] != '' and self.bank[1] == '':
                 self.bank[1] = self.deck[c]
 
-        print(self.player.hand, self.bank, self.deck)
+        # print(self.player.hand, self.bank, self.deck) debug print
 
+    def compare_points(self):
+        bank_points = 0
+        player_points = 0
+        points_dict = {'Asso':1, 'Due':2, 'Tre':3, 'Quattro':4, 'Cinque':5, 'Sei':6, 'Sette':7, 'Otto':8, 'Nove':9, 'Dieci':10, 'Jack':10, 'Donna':10, 'Re':10}
+        for elem in self.bank:
+            bank_points += int(points_dict[elem])
+            # print(points_dict[elem])
+            # print(elem)
+        print('Bank points are: %s' %(bank_points))
+        for elem in self.player.hand:
+            player_points += int(points_dict[elem])
+            # print(points_dict[elem])
+            # print(elem)
+        print('Player points are: %s' %(player_points))
 andrea = Player()
 game = Game()
 
 game.first_draw()
+game.compare_points()
