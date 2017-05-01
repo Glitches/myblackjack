@@ -32,15 +32,20 @@ class Player(object):
 class Game(object):
     '''Define the game '''
 
-    def __init__(self):
+    points_dict = {'Asso':1, 'Due':2, 'Tre':3, 'Quattro':4, 'Cinque':5, 'Sei':6, 'Sette':7, 'Otto':8, 'Nove':9, 'Dieci':10, 'Jack':10, 'Donna':10, 'Re':10}
+    bank_points = 0
+    player_points = 0
+
+    def __init__(self, bet=1):
         self.player = Player()
         self.deck = play_deck
         self.bank = ['','']
+        self.bet = bet
 
     def first_draw(self):
         i = 0
         while i < 4:
-            c = randint(0,54)
+            c = randint(0,51)
             if self.deck[c] != '' and self.player.hand[0] == '':
                 self.player.hand[0] = self.deck[c]
                 self.deck[c] = ''
@@ -64,25 +69,61 @@ class Game(object):
                 continue
             elif self.deck[c] != '' and self.bank[1] == '':
                 self.bank[1] = self.deck[c]
+                self.deck[c] = ''
 
         # print(self.player.hand, self.bank, self.deck) debug print
 
     def compare_points(self):
-        bank_points = 0
-        player_points = 0
-        points_dict = {'Asso':1, 'Due':2, 'Tre':3, 'Quattro':4, 'Cinque':5, 'Sei':6, 'Sette':7, 'Otto':8, 'Nove':9, 'Dieci':10, 'Jack':10, 'Donna':10, 'Re':10}
-        for elem in self.bank:
-            bank_points += int(points_dict[elem])
-            # print(points_dict[elem])
-            # print(elem)
-        print('Bank points are: %s' %(bank_points))
-        for elem in self.player.hand:
-            player_points += int(points_dict[elem])
-            # print(points_dict[elem])
-            # print(elem)
-        print('Player points are: %s' %(player_points))
-andrea = Player()
-game = Game()
 
-game.first_draw()
-game.compare_points()
+        # points_dict = {'Asso':1, 'Due':2, 'Tre':3, 'Quattro':4, 'Cinque':5, 'Sei':6, 'Sette':7, 'Otto':8, 'Nove':9, 'Dieci':10, 'Jack':10, 'Donna':10, 'Re':10}
+        for elem in self.bank:
+            self.bank_points += int(self.points_dict[elem])
+            print(self.points_dict[elem]) # debug
+            print(elem) # debug
+        print('Bank points are: %s' %(self.bank_points))
+        for elem in self.player.hand:
+            self.player_points += int(self.points_dict[elem])
+            # print(points_dict[elem])
+            # print(elem)
+        print('Player points are: %s' %(self.player_points))
+
+    def banker(self):
+        '''attenzione che due funzioni contapunti raddoppiano il punteggio
+        attenzione che va in loop perenne'''
+
+        c = randint(0,51)
+        '''for elem in self.player.hand:
+            self.player_points += int(self.points_dict[elem])
+        for elem in self.bank:
+            self.bank_points += int(self.points_dict[elem])'''
+        while self.bank_points < self.player_points and self.bank_points < 21:
+            c = randint(0,51)
+            # print(self.deck) # debug
+            if self.deck[c] != '':
+                self.bank.append(self.deck[c])
+
+    def stand():
+
+
+
+    #def hit(self):
+    #def double(self):
+    '''def bet(self):
+        while self.bet != '1' and self.bet != '5' and self.bet != '10':
+            self.bet = input('How much do you want bet? 1/5/10')'''
+
+
+
+print('''Welcome to my project BlackJack!
+It's pretty easy to play''')
+end = 'y'
+while end[0] == 'y':
+    bet = input('how much you want to bet? ')
+    andrea = Player()
+    game = Game(bet)
+    #game.bet()
+    game.first_draw()
+    game.banker()
+    game.compare_points()
+    end = input('Do you want play again? Y/N ').lower()
+print('Thank you for playing!')
