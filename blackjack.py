@@ -102,7 +102,26 @@ class Game(object):
             if self.deck[c] != '':
                 self.bank.append(self.deck[c])
 
-    def stand():
+    def draw_card(self):
+            c = randint(0,51)
+            # print(self.deck) # debug
+            while self.deck[c] == '':
+                c = randint(0,51)
+            self.player.hand.append(self.deck[c])
+            print(self.player.hand)
+            self.stand_hit()
+
+
+    def stand_hit(self):
+        st_hit = ' '
+        while st_hit[0] != 'h' and st_hit[0] != 's':
+            st_hit = input('Type \'Hit\' if you want another card , or \'Stand\' if you are already ok! -> ').lower()
+        if st_hit[0] == 'h':
+            self.draw_card() # chiedi carta
+        else:
+            self.banker()
+
+
 
 
 
@@ -123,7 +142,8 @@ while end[0] == 'y':
     game = Game(bet)
     #game.bet()
     game.first_draw()
-    game.banker()
+    game.stand_hit()
+    # game.banker()
     game.compare_points()
     end = input('Do you want play again? Y/N ').lower()
 print('Thank you for playing!')
