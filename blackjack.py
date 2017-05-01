@@ -74,51 +74,85 @@ class Game(object):
         # print(self.player.hand, self.bank, self.deck) debug print
 
     def compare_points(self):
-
+        '''Count bank point and player's points and displys them'''
         # points_dict = {'Asso':1, 'Due':2, 'Tre':3, 'Quattro':4, 'Cinque':5, 'Sei':6, 'Sette':7, 'Otto':8, 'Nove':9, 'Dieci':10, 'Jack':10, 'Donna':10, 'Re':10}
-        for elem in self.bank:
+        '''for elem in self.bank:
             self.bank_points += int(self.points_dict[elem])
             print(self.points_dict[elem]) # debug
-            print(elem) # debug
+            print(elem) # debug'''
         print('Bank points are: %s' %(self.bank_points))
-        for elem in self.player.hand:
+        '''for elem in self.player.hand:
             self.player_points += int(self.points_dict[elem])
             # print(points_dict[elem])
-            # print(elem)
+            # print(elem)'''
         print('Player points are: %s' %(self.player_points))
 
     def banker(self):
         '''attenzione che due funzioni contapunti raddoppiano il punteggio
         attenzione che va in loop perenne'''
 
-        c = randint(0,51)
-        '''for elem in self.player.hand:
+        for elem in self.player.hand:
             self.player_points += int(self.points_dict[elem])
         for elem in self.bank:
-            self.bank_points += int(self.points_dict[elem])'''
-        while self.bank_points < self.player_points and self.bank_points < 21:
+            self.bank_points += int(self.points_dict[elem])
+        if self.bank_points < self.player_points and self.bank_points < 21:
             c = randint(0,51)
             # print(self.deck) # debug
             if self.deck[c] != '':
                 self.bank.append(self.deck[c])
+        if self.bank_points > 21:
+            print('Bank busts!!')
+            self.win_count()
+        elif self.bank_points == self.player_points:
+            ''' costruisci la funzione push'''
+        elif self.player_points > 21:
+            print('You bust!!')
+            '''loose function!!'''
+        elif self.bank_points > self.player_points:
+            print('You lost')
 
     def draw_card(self):
+        '''Draws a card from the deck and adds it to players'hand'''
+        c = randint(0,51)
+        # print(self.deck) # debug
+        while self.deck[c] == '':
             c = randint(0,51)
-            # print(self.deck) # debug
-            while self.deck[c] == '':
-                c = randint(0,51)
-            self.player.hand.append(self.deck[c])
-            print(self.player.hand)
-            self.stand_hit()
+        self.player.hand.append(self.deck[c])
+        self.print_table()
+        self.stand_hit()
+
+    def print_table(self):
+        '''Print something similar to a game table
+
+        input:
+        self.player.hand()
+        self.bank'''
+        print('The bank:')
+        print('  ' + '-------- '*3)
+        print('|   ' + str(self.bank) + '   |')
+        print('  ' + '-------- '*3)
+        print('-'*90)
+        print('Your cards:')
+        print('  ' + '-------- '*len(self.player.hand))
+        print('|   ' + str(self.player.hand) + '   |')
+        print('  ' + '-------- '*len(self.player.hand))
+
+    def win_count(self):
+        self.player.add_bankroll(bet*2)
+
 
 
     def stand_hit(self):
+        '''Ask the player if he wants stand or Hit
+
+        input
+        st_hit prompts a request to type the choice'''
         st_hit = ' '
         while st_hit[0] != 'h' and st_hit[0] != 's':
             st_hit = input('Type \'Hit\' if you want another card , or \'Stand\' if you are already ok! -> ').lower()
         if st_hit[0] == 'h':
             self.draw_card() # chiedi carta
-        else:
+        elif st_hit[0] == 's':
             self.banker()
 
 
@@ -143,6 +177,7 @@ while end[0] == 'y':
     #game.bet()
     game.first_draw()
     game.stand_hit()
+    game.print_table()
     # game.banker()
     game.compare_points()
     end = input('Do you want play again? Y/N ').lower()
