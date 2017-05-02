@@ -23,8 +23,9 @@ class Player(object):
         self.bankroll = bankroll
         self.hand = ['','']
 
+
     def add_bankroll(self, win):
-        self.bankroll += win
+        self.bankroll += int(win)
 
     def bet(self, bet):
         self.bankroll -= bet
@@ -64,7 +65,6 @@ class Game(object):
             elif self.deck[c] != '' and self.bank[1] == '':
                 self.bank[1] = self.deck[c]
                 self.deck[c] = ''
-                print(self.player.hand)
                 i += 1
                 continue
             elif self.deck[c] != '' and self.bank[1] == '':
@@ -80,36 +80,58 @@ class Game(object):
             self.bank_points += int(self.points_dict[elem])
             print(self.points_dict[elem]) # debug
             print(elem) # debug'''
-        print('Bank points are: %s' %(self.bank_points))
+        print('Bank points are: %s' %(self.bank_point_counter()))
         '''for elem in self.player.hand:
             self.player_points += int(self.points_dict[elem])
             # print(points_dict[elem])
             # print(elem)'''
-        print('Player points are: %s' %(self.player_points))
+        print('Player points are: %s' %(self.player_point_counter()))
 
     def banker(self):
         '''attenzione che due funzioni contapunti raddoppiano il punteggio
         attenzione che va in loop perenne'''
+        print('Siamo nella funzione banker '+ str(self.bank_point_counter()))
 
-        for elem in self.player.hand:
-            self.player_points += int(self.points_dict[elem])
-        for elem in self.bank:
-            self.bank_points += int(self.points_dict[elem])
-        if self.bank_points < self.player_points and self.bank_points < 21:
+        while self.bank_point_counter() < self.player_point_counter() and self.bank_point_counter() < 21:
             c = randint(0,51)
             # print(self.deck) # debug
+            print(c)
             if self.deck[c] != '':
                 self.bank.append(self.deck[c])
-        if self.bank_points > 21:
+        if self.bank_point_counter() > 21:
             print('Bank busts!!')
             self.win_count()
-        elif self.bank_points == self.player_points:
-            ''' costruisci la funzione push'''
-        elif self.player_points > 21:
+        elif self.bank_point_counter() == self.player_point_counter():
+            print('Push!')
+            self.lost_count()
+        elif self.player_point_counter() > 21:
             print('You bust!!')
-            '''loose function!!'''
-        elif self.bank_points > self.player_points:
+
+            self.lost_count()
+        elif self.bank_point_counter() > self.player_point_counter():
             print('You lost')
+            self.lost_count()
+        else:
+            print('you win!')
+
+    def player_point_counter(self):
+        '''conta le carte del giocatore'''
+        points = 0
+        for elem in self.player.hand:
+            points += int(self.points_dict[elem])
+        return points
+
+    def bank_point_counter(self):
+        '''conta i puti del bank goni volta che lo chiami
+
+        output
+        points i punti delle carte del banco'''
+        points = 0
+        print('Sono nella funzione conta punti')
+        for elem in self.bank:
+            points += int(self.points_dict[elem])
+        return points
+
 
     def draw_card(self):
         '''Draws a card from the deck and adds it to players'hand'''
@@ -118,10 +140,10 @@ class Game(object):
         while self.deck[c] == '':
             c = randint(0,51)
         self.player.hand.append(self.deck[c])
-        self.print_table()
+        self.print_table_covered()
         self.stand_hit()
 
-    def print_table(self):
+    def print_table_uncovered(self):
         '''Print something similar to a game table
 
         input:
@@ -137,9 +159,29 @@ class Game(object):
         print('|   ' + str(self.player.hand) + '   |')
         print('  ' + '-------- '*len(self.player.hand))
 
+    def print_table_covered(self):
+        '''Print something similar to a game table
+        with second bank card covered
+
+        input:
+        self.player.hand()
+        self.bank'''
+        print('The bank:')
+        print('  ' + '-------- '*3)
+        print('|   ' + str(self.bank[0]) + '       |')
+        print('  ' + '-------- '*3)
+        print('-'*90)
+        print('Your cards:')
+        print('  ' + '-------- '*len(self.player.hand))
+        print('|   ' + str(self.player.hand) + '   |')
+        print('  ' + '-------- '*len(self.player.hand))
+
+
     def win_count(self):
         self.player.add_bankroll(bet*2)
 
+    def lost_count(self):
+        print('You lost!')
 
 
     def stand_hit(self):
@@ -176,8 +218,12 @@ while end[0] == 'y':
     game = Game(bet)
     #game.bet()
     game.first_draw()
-    game.stand_hit()
-    game.print_table()
+    game.print_table_covered()
+    while game.player_point_counter() <= 21:
+        game.stand_hit()
+        print(game.player_point_counter())
+
+
     # game.banker()
     game.compare_points()
     end = input('Do you want play again? Y/N ').lower()
